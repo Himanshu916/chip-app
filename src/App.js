@@ -7,24 +7,13 @@ import Chips from "./components/Chips";
 
 function App() {
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [userData, setUserData] = useState(data);
   const [highlightUser, setHighlightUser] = useState(null);
   const [userString, setUserString] = useState("");
 
   const inputRef = useRef();
   let flag = useRef(0);
-  useEffect(
-    function () {
-      if (selectedUser === null) return;
-      setUserData((state) =>
-        state.filter(
-          (user) => user.name.toLowerCase() !== selectedUser.name.toLowerCase()
-        )
-      );
-    },
-    [selectedUser]
-  );
+
   useEffect(
     function () {
       function handleClick(e) {
@@ -53,12 +42,24 @@ function App() {
         (item) => item.name.toLowerCase() !== user.name.toLowerCase()
       )
     );
-    setUserData((state) => [user, ...state]);
+
+    setUserData((state) => {
+      const found = state.find((item) => item.name === user.name);
+
+      if (found) {
+        return [user, ...state.filter((item) => item.name !== user.name)];
+      }
+      return [user, ...state];
+    });
   }
 
   function selectUser(user) {
-    setSelectedUsers((state) => [...state, user]);
-    setSelectedUser(user);
+    setSelectedUsers((state) => [...new Set([...state, user])]);
+    setUserData((state) =>
+      state.filter(
+        (item) => item.name.toLowerCase() !== user.name.toLowerCase()
+      )
+    );
   }
 
   return (
