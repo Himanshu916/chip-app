@@ -1,11 +1,14 @@
-function Chips({ selectedUsers, deleteUser }) {
+function Chips({ selectedUsers, deleteUser, highlightUser }) {
   return (
     <div className="flex flex-wrap gap-2">
       {selectedUsers.length > 0 &&
         selectedUsers.map((user) => (
           <div
             key={user.email}
-            className={`bg-gray-200 items-center flex gap-1 px-3 py-1 rounded-full  `}
+            className={`bg-gray-200 items-center flex gap-1 px-3 py-1 rounded-full ${
+              highlightUser?.name.toLowerCase() === user.name.toLowerCase() &&
+              "bg-red-300 "
+            } `}
           >
             <img
               className="w-6 rounded-full"

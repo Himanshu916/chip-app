@@ -9,8 +9,11 @@ function App() {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [userData, setUserData] = useState(data);
-  const inputRef = useRef(null);
+  const [highlightUser, setHighlightUser] = useState(null);
+  const [userString, setUserString] = useState("");
 
+  const inputRef = useRef();
+  let flag = useRef(0);
   useEffect(
     function () {
       if (selectedUser === null) return;
@@ -22,8 +25,24 @@ function App() {
     },
     [selectedUser]
   );
+  useEffect(
+    function () {
+      function handleClick(e) {
+        if (inputRef.current && e.key === "Backspace" && !userString) {
+          setHighlightUser(selectedUsers[selectedUsers.length - 1]);
+          if (flag.current === 1) flag.current = 0;
+          else flag.current = 1;
 
-  const [userString, setUserString] = useState("");
+          if (highlightUser && flag.current === 0) deleteUser(highlightUser);
+        }
+      }
+
+      document.addEventListener("keydown", handleClick);
+
+      return () => document.removeEventListener("keydown", handleClick);
+    },
+    [selectedUsers, highlightUser]
+  );
 
   function deleteUser(user) {
     setSelectedUsers((state) =>
@@ -40,11 +59,15 @@ function App() {
   }
 
   return (
-    <div className="w-[1200px] mx-auto min-h-svh bg-gray-100">
+    <div className="w-[1200px] mx-auto min-h-svh bg-gray-50">
       <h1 className="text-center text-[3rem] text-blue-400">Pick Users</h1>
 
       <div className="flex flex-wrap items-center border-b-2 gap-2 py-2 border-blue-950">
-        <Chips selectedUsers={selectedUsers} deleteUser={deleteUser} />
+        <Chips
+          selectedUsers={selectedUsers}
+          deleteUser={deleteUser}
+          highlightUser={highlightUser}
+        />
 
         <div className="relative">
           <input
@@ -59,6 +82,7 @@ function App() {
               setUserString(e.target.value);
             }}
           />
+
           <List
             data={userData}
             onSelectingUser={selectUser}
