@@ -33,7 +33,10 @@ function App() {
           if (flag.current === 1) flag.current = 0;
           else flag.current = 1;
 
-          if (highlightUser && flag.current === 0) deleteUser(highlightUser);
+          if (highlightUser && flag.current === 0) {
+            deleteUser(highlightUser);
+            setHighlightUser(null);
+          }
         }
       }
 
